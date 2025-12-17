@@ -23,11 +23,12 @@ def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(securit
         (username,)
     )
     row = cur.fetchone()
-    db.close()
-
+    
     cur.execute("SELECT 1 FROM token_blacklist WHERE token=?", (token,))
     if cur.fetchone():
         raise HTTPException(status_code=401, detail="Token revoked")
+    
+    db.close()
 
     if not row:
         raise HTTPException(status_code=401, detail="User not found")

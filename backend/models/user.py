@@ -22,6 +22,7 @@ class UserRegister(BaseModel):
 
 class UserLogin(BaseModel):
     username: str
+    email: EmailStr
     password: str = Field(..., min_length=6)
 
 class UserUpdate(BaseModel):

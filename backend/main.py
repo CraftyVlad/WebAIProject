@@ -22,7 +22,7 @@ app.add_middleware(
 )
 
 # routing
-app.include_router(users.router, prefix="/api/auth", tags=["auth"])
+app.include_router(users.router, prefix="/api/users", tags=["users"])
 app.include_router(chat.router, prefix="/api/chat", tags=["chat"])
 app.include_router(products.router, prefix="/api/products", tags=["products"])
 

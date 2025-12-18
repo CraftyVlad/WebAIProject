@@ -1,0 +1,22 @@
+import { Link } from "react-router-dom";
+
+export default function ProductGrid({products, search}) {
+    return (
+        <div className="products-grid">
+            {products
+                .filter((p) => p.title.toLowerCase().includes(search.toLowerCase()))
+                .map((p) => (
+                    <div key={p.id} className="product-card">
+                        <Link to={`/product/${p.id}`}>
+                            <img src={p.image} alt="product image" />
+                            <h4>{p.title}</h4>
+                            <p>
+                                {p.rating.rate}/5 (Out of {p.rating.count})
+                            </p>
+                            <br />${p.price}
+                        </Link>
+                    </div>
+                ))}
+        </div>
+    );
+}

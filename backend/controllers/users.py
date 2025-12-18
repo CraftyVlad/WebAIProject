@@ -37,6 +37,9 @@ def register(user: UserRegister):
 
 @router.post("/login", response_model=AuthUser)
 def login(user: UserLogin):
+    if len(user.password) < 6:
+        raise HTTPException(status_code=400, detail="Password must be at least 6 characters")
+
     db = get_db()
     cur = db.cursor()
 
@@ -52,6 +55,9 @@ def login(user: UserLogin):
 
     if not row or not verify_password(user.password, row[2]):
         raise HTTPException(status_code=400, detail="Invalid credentials")
+
+    if user.email != row[1]:
+        raise HTTPException(status_code=400, detail="Invalid email")
 
     jwt_token = create_access_token(row[0])
 

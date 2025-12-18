@@ -29,7 +29,7 @@ def chat(body: ChatRequest, current_user: dict = Depends(get_current_user)):
     products = resp.json()
 
     prompt = f"""
-You are a store assistant.
+You are a store assistant. Reply in the same language as the user’s question.
 Answer ONLY using this product data:
 
 {json.dumps(products, indent=2)}

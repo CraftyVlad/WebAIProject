@@ -4,15 +4,7 @@ async function handleResponse(res) {
     const data = await res.json();
 
     if (!res.ok) {
-        if (Array.isArray(data.detail)) {
-            throw new Error(data.detail[0].msg);
-        }
-
-        if (typeof data.detail === "string") {
-            throw new Error(data.detail);
-        }
-
-        throw new Error("Request failed");
+        throw new Error(data.detail || "Request failed");
     }
 
     return data;

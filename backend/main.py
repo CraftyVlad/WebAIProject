@@ -1,18 +1,18 @@
 import uvicorn
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
 
 from controllers import users, chat
 from controllers import products
 from db.database import get_db
 
-# init
 app = FastAPI(
     title="FastAPI Store AI",
     version="0.1.0"
 )
 
-# middleware
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000"],
@@ -21,11 +21,22 @@ app.add_middleware(
     allow_methods=["*"],
 )
 
-# routing
 app.include_router(users.router, prefix="/api/users", tags=["users"])
 app.include_router(chat.router, prefix="/api/chat", tags=["chat"])
 app.include_router(products.router, prefix="/api/products", tags=["products"])
 
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    errors = []
+
+    for err in exc.errors():
+        field = err["loc"][-1]
+        errors.append(f"{field.capitalize()} is invalid")
+
+    return JSONResponse(
+        status_code=status.HTTP_400_BAD_REQUEST,
+        content={"detail": errors},
+    )
 
 @app.on_event("startup")
 def init_db():
@@ -49,7 +60,7 @@ def main():
     uvicorn.run(
         "main:app",
         host="0.0.0.0",
-        port=3000,
+        port=8000,
         reload=True
     )
 

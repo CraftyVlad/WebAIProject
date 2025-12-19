@@ -6,16 +6,16 @@ export default function ProductGrid({products, search}) {
             {products
                 .filter((p) => p.title.toLowerCase().includes(search.toLowerCase()))
                 .map((p) => (
-                    <div key={p.id} className="product-card">
-                        <Link to={`/product/${p.id}`}>
+                    <Link key={p.id} to={`/product/${p.id}`} className="product-card-link">
+                        <div className="product-card">
                             <img src={p.image} alt="product image" />
                             <h4>{p.title}</h4>
                             <p>
                                 {p.rating.rate}/5 (Out of {p.rating.count})
                             </p>
                             <br />${p.price}
-                        </Link>
-                    </div>
+                        </div>
+                    </Link>
                 ))}
         </div>
     );

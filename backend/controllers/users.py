@@ -1,7 +1,8 @@
 from fastapi import Depends, HTTPException, APIRouter
 from datetime import datetime, timedelta
-
 from fastapi.security import HTTPAuthorizationCredentials
+
+import sqlite3
 
 from db.database import get_db
 from models.user import UserRegister, UserLogin, User, AuthUser, UserUpdate
@@ -14,23 +15,36 @@ router = APIRouter()
 
 @router.post("/register")
 def register(user: UserRegister):
-    now = datetime.utcnow().isoformat()
+    if len(user.password) < 6:
+        raise HTTPException(status_code=400, detail="Password must be at least 6 characters")
+
     db = get_db()
     cur = db.cursor()
 
-    try:
-        cur.execute(
-            """
-            INSERT INTO users (username, email, password, created_at, updated_at)
-            VALUES (?, ?, ?, ?, ?)
-            """,
-            (user.username, user.email, hash_password(user.password), now, now)
-        )
-        db.commit()
-    except:
-        raise HTTPException(status_code=400, detail="User already exists")
-    finally:
+    cur.execute(
+        "SELECT 1 FROM users WHERE username=? OR email=?",
+        (user.username, user.email)
+    )
+    exists = cur.fetchone()
+
+    if exists:
         db.close()
+        raise HTTPException(
+            status_code=400,
+            detail="Username or email already exists"
+        )
+
+    now = datetime.utcnow().isoformat()
+    cur.execute(
+        """
+        INSERT INTO users (username, email, password, created_at, updated_at)
+        VALUES (?, ?, ?, ?, ?)
+        """,
+        (user.username, user.email, hash_password(user.password), now, now)
+    )
+
+    db.commit()
+    db.close()
 
     return {"success": True}
 
@@ -51,15 +65,21 @@ def login(user: UserLogin):
         (user.username,)
     )
     row = cur.fetchone()
-    db.close()
 
-    if not row or not verify_password(user.password, row[2]):
+    if not row:
+        db.close()
         raise HTTPException(status_code=400, detail="Invalid credentials")
 
     if user.email != row[1]:
-        raise HTTPException(status_code=400, detail="Invalid email")
+        db.close()
+        raise HTTPException(status_code=400, detail="Invalid credentials")
+
+    if not verify_password(user.password, row[2]):
+        db.close()
+        raise HTTPException(status_code=400, detail="Invalid credentials")
 
     jwt_token = create_access_token(row[0])
+    db.close()
 
     return AuthUser(
         user=User(

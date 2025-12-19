@@ -1,34 +1,42 @@
 import {useState} from "react";
-import {register} from "../api/api";
-import {Link, useNavigate} from "react-router-dom";
+import {Link} from "react-router-dom";
 
-export default function Register() {
+export default function Register({token, handleRegister}) {
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const navigate = useNavigate();
-    const [token, setToken] = useState(localStorage.getItem("token"));
     const [error, setError] = useState("");
 
-    async function handleRegister() {
+    async function submit() {
+        if (username.trim() === "") return setError("Username is required");
+        if (!email.includes("@")) return setError("Email is invalid");
+        if (password.length < 6) return setError("Password too short");
         try {
             setError("");
-            await register(username, email, password);
-            navigate("/login");
+            await handleRegister(username, email, password, () => {
+                setUsername("");
+                setEmail("");
+                setPassword("");
+            });
         } catch (err) {
             setError(err.message);
         }
     }
+
     return (
         <div style={{padding: 20}}>
-            <Link to="/">Home</Link>
-            <h2>Register</h2>
+            <header className="header">
+                <div className="header-inner">
+                    <Link to="/">Store With AI ©</Link>
+                    <h2>Register</h2>
+                </div>
+            </header>
 
             {!token && (
                 <>
-                    <input placeholder="username" onChange={(e) => setUsername(e.target.value)} />
+                    <input value={username} placeholder="username" onChange={(e) => setUsername(e.target.value)} required />
                     <br />
-                    <input placeholder="email" onChange={(e) => setEmail(e.target.value)} />
+                    <input value={email} placeholder="email" onChange={(e) => setEmail(e.target.value)} required />
                     <br />
                     <input
                         placeholder="password"
@@ -36,17 +44,13 @@ export default function Register() {
                         value={password}
                         onChange={(e) => {
                             setPassword(e.target.value);
-                            if (e.target.value.length < 6) {
-                                setError("Password too short");
-                            } else {
-                                setError("");
-                            }
                         }}
                     />
                     <br />
-                    <button onClick={handleRegister}>Register</button>
+                    <button onClick={submit}>Register</button>
                     <br />
                     {error && <p style={{color: "red"}}>{error}</p>}
+                    <Link to="/login">Already have an account? Login here.</Link>
                 </>
             )}
         </div>

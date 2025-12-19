@@ -1,38 +1,42 @@
 import {useState} from "react";
-import {login} from "../api/api";
-import {Link, useNavigate} from "react-router-dom";
+import {Link} from "react-router-dom";
 
-export default function Login() {
+export default function Login({token, handleLogin}) {
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const navigate = useNavigate();
-    const [token, setToken] = useState(localStorage.getItem("token"));
     const [error, setError] = useState("");
 
-    async function handleLogin() {
+    async function submit() {
+        if (username.trim() === "") return setError("Username is required");
+        if (!email.includes("@")) return setError("Email is invalid");
+        if (password.length < 6) return setError("Password too short");
         try {
             setError("");
-            const data = await login(username, email, password);
-            if (data.jwt) {
-                localStorage.setItem("token", data.jwt);
-                setToken(data.jwt);
-                navigate("/");
-            }
+            await handleLogin(username, email, password, () => {
+                setUsername("");
+                setEmail("");
+                setPassword("");
+            });
         } catch (err) {
             setError(err.message);
         }
     }
+
     return (
         <div style={{padding: 20}}>
-            <Link to="/">Home</Link>
-            <h2>Login</h2>
+            <header className="header">
+                <div className="header-inner">
+                    <Link to="/">Store With AI ©</Link>
+                    <h2>Login</h2>
+                </div>
+            </header>
 
             {!token && (
                 <>
-                    <input placeholder="username" onChange={(e) => setUsername(e.target.value)} />
+                    <input value={username} placeholder="username" onChange={(e) => setUsername(e.target.value)} required />
                     <br />
-                    <input placeholder="email" onChange={(e) => setEmail(e.target.value)} />
+                    <input value={email} placeholder="email" onChange={(e) => setEmail(e.target.value)} required />
                     <br />
                     <input
                         placeholder="password"
@@ -40,17 +44,13 @@ export default function Login() {
                         value={password}
                         onChange={(e) => {
                             setPassword(e.target.value);
-                            if (e.target.value.length < 6) {
-                                setError("Password too short");
-                            } else {
-                                setError("");
-                            }
                         }}
                     />
                     <br />
-                    <button onClick={handleLogin}>Login</button>
+                    <button onClick={submit}>Login</button>
                     <br />
                     {error && <p style={{color: "red"}}>{error}</p>}
+                    <Link to="/register">Don't have an account? Register here.</Link>
                 </>
             )}
         </div>

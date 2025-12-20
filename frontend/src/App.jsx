@@ -6,6 +6,7 @@ import Product from "./pages/Product";
 import Cart from "./pages/Cart";
 import {useEffect, useState} from "react";
 import {login, register} from "./api/api";
+import Chat from "./components/Chat";
 
 export default function App() {
     const [cart, setCart] = useState(() => {
@@ -19,9 +20,6 @@ export default function App() {
     });
     const [token, setToken] = useState(localStorage.getItem("token"));
     const [username, setUsername] = useState(localStorage.getItem("username"));
-    // const [inputUsername, setInputUsername] = useState("");
-    // const [inputEmail, setInputEmail] = useState("");
-    // const [inputPassword, setInputPassword] = useState("");
     const [search, setSearch] = useState("");
 
     const navigate = useNavigate();
@@ -34,13 +32,6 @@ export default function App() {
         setCart(newCart);
         localStorage.setItem("cart", JSON.stringify(newCart));
     }
-
-    // function validateLogin() {
-    //     if (!inputUsername.trim()) return "Username is required";
-    //     if (!inputEmail.includes("@")) return "Email is invalid";
-    //     if (inputPassword.length < 6) return "Password too short";
-    //     return null;
-    // }
 
     async function handleLogin(username, email, password, onSuccess) {
         const data = await login(username, email, password);
@@ -80,32 +71,35 @@ export default function App() {
     }
 
     return (
-        <Routes>
-            <Route
-                path="/"
-                element={<Home cart={cart} username={username} search={search} setSearch={setSearch} token={token} logoutUser={logoutUser} />}
-            />
-            <Route path="/login" element={<Login token={token} handleLogin={handleLogin} />} />
-            <Route path="/register" element={<Register token={token} handleRegister={handleRegister} />} />
-            <Route
-                path="/product/:id"
-                element={
-                    <Product
-                        cart={cart}
-                        setCart={setCart}
-                        addToCart={addToCart}
-                        username={username}
-                        token={token}
-                        search={search}
-                        setSearch={setSearch}
-                        logoutUser={logoutUser}
-                    />
-                }
-            />
-            <Route
-                path="/cart"
-                element={<Cart cart={cart} setCart={setCart} username={username} token={token} updateCart={updateCart} logoutUser={logoutUser} />}
-            />
-        </Routes>
+        <>
+            <Routes>
+                <Route
+                    path="/"
+                    element={<Home cart={cart} username={username} search={search} setSearch={setSearch} token={token} logoutUser={logoutUser} />}
+                />
+                <Route path="/login" element={<Login cart={cart} token={token} handleLogin={handleLogin} />} />
+                <Route path="/register" element={<Register cart={cart} token={token} handleRegister={handleRegister} />} />
+                <Route
+                    path="/product/:id"
+                    element={
+                        <Product
+                            cart={cart}
+                            addToCart={addToCart}
+                            username={username}
+                            token={token}
+                            search={search}
+                            setSearch={setSearch}
+                            logoutUser={logoutUser}
+                        />
+                    }
+                />
+                <Route
+                    path="/cart"
+                    element={<Cart cart={cart} username={username} token={token} updateCart={updateCart} logoutUser={logoutUser} />}
+                />
+            </Routes>
+
+            <Chat token={token} />
+        </>
     );
 }

@@ -1,55 +1,74 @@
-import {useState} from "react";
+import {useState, useRef, useEffect} from "react";
 import {chat} from "../api/api";
+import {HiOutlineSparkles} from "react-icons/hi2";
 
 export default function Chat({token}) {
     const [open, setOpen] = useState(false);
     const [message, setMessage] = useState("");
     const [messages, setMessages] = useState([]);
+    const messagesEndRef = useRef(null);
+
+    useEffect(() => {
+        setMessages([]);
+    }, [token]);
+
+    useEffect(() => {
+        messagesEndRef.current?.scrollIntoView({behavior: "smooth"});
+    }, [messages]);
 
     async function sendChat() {
-        if (!message) return;
+        if (!message.trim()) return;
 
         setMessages([...messages, {sender: "user", text: message}]);
-
-        const res = await chat(message, token);
-
-        setMessages((prev) => [...prev, {sender: "store assistant", text: res.answer}]);
         setMessage("");
+
+        if (!token) return;
+
+        try {
+            const res = await chat(message, token);
+            setMessages((prev) => [...prev, {sender: "assistant", text: res.answer}]);
+        } catch (err) {
+            setMessages((prev) => [...prev, {sender: "assistant", text: "Error: " + err.message}]);
+        }
     }
 
     return (
         <>
             <button className="chat-button" onClick={() => setOpen(!open)}>
-                CHAT
+                <HiOutlineSparkles size={24} />
             </button>
 
             <div className={`chat-panel ${open ? "open" : ""}`}>
-                <button onClick={() => setOpen(false)}>Close</button>
-                <h3>Chat with AI</h3>
+                <div className="chat-header">
+                    <h3>Chat with Store Assistant</h3>
+                    <button className="button" onClick={() => setOpen(false)}>✕</button>
+                </div>
 
-                {!token && <p>Please login to use the chat feature.</p>}
+                <div className="chat-body">
+                    {!token && <p>Please login to use the chat feature.</p>}
+                    {token && (
+                        <>
+                            <div className="chat-messages">
+                                {messages.map((m, i) => (
+                                    <div key={i} className={`chat-message ${m.sender}`}>
+                                        <b>{m.sender === "user" ? "You:" : "Store assistant:"}</b> {m.text}
+                                    </div>
+                                ))}
+                                <div ref={messagesEndRef} />
+                            </div>
 
-                {token && (
-                    <>
-                        <div className="chat-messages" style={{maxHeight: "300px", overflowY: "auto", marginBottom: "10px"}}>
-                            {messages.map((m, i) => (
-                                <div key={i} style={{marginBottom: "5px"}}>
-                                    <b>{m.sender === "user" ? "You:" : "Store assistant:"}</b> {m.text}
-                                </div>
-                            ))}
-                        </div>
-
-                        <input
-                            placeholder="Ask about products..."
-                            value={message}
-                            onChange={(e) => setMessage(e.target.value)}
-                            onKeyDown={(e) => {
-                                if (e.key === "Enter") sendChat();
-                            }}
-                        />
-                        <button onClick={sendChat}>Send</button>
-                    </>
-                )}
+                            <div className="chat-input">
+                                <input
+                                    placeholder="Ask about products..."
+                                    value={message}
+                                    onChange={(e) => setMessage(e.target.value)}
+                                    onKeyDown={(e) => e.key === "Enter" && sendChat()}
+                                />
+                                <button className="button" onClick={sendChat}>Send</button>
+                            </div>
+                        </>
+                    )}
+                </div>
             </div>
         </>
     );

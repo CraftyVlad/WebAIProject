@@ -1,11 +1,14 @@
 import {useEffect, useState} from "react";
-import {useParams} from "react-router-dom";
+import {Link, useParams, useNavigate} from "react-router-dom";
 import {fetchProducts} from "../api/api";
 import Header from "../components/Header.jsx";
+import Footer from "../components/Footer.jsx";
+import Chat from "../components/Chat.jsx";
 
-export default function Product({cart, setCart, addToCart, username, token,  search, setSearch, logoutUser}) {
+export default function Product({cart, addToCart, username, token,  search, setSearch, logoutUser}) {
     const {id} = useParams();
     const [product, setProduct] = useState(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         fetchProducts().then((products) => {
@@ -17,36 +20,65 @@ export default function Product({cart, setCart, addToCart, username, token,  sea
     if (!product) {
         return (
             <>
-                <p className="container">Loading...</p>
+                <div className="container">
+                    <h2>Loading...</h2>
+                </div>
             </>
         );
     }
 
+    const isInCart = cart.find((p) => p.id === product.id);
+
     return (
         <>
-            <Header cart={cart} search={search} setSearch={setSearch} username={username} token={token} logoutUser={logoutUser} isSearchable={false} />
+            <Header
+                cart={cart}
+                search={search}
+                setSearch={setSearch}
+                username={username}
+                token={token}
+                logoutUser={logoutUser}
+                isSearchable={false}
+            />
 
-            <div className="container">
-                <h2>{product.title}</h2>
+            <div className="container" style={{display: "flex", justifyContent: "center", flexDirection: "column", gap: 20}}>
+                <Link onClick={() => navigate(-1)} style={{fontWeight: "bold"}}>
+                    ← Back
+                </Link>
+                <div className="product-container">
+                    <img src={product.image} alt={product.title} />
 
-                <img src={product.image} alt={product.title} style={{maxWidth: "300px", display: "block"}} />
+                    <div className="product-detail">
+                        <h2>{product.title}</h2>
+                        <p>{product.description}</p>
 
-                <p>
-                    <strong>Price:</strong> ${product.price}
-                </p>
-                <p>{product.description}</p>
-                <p>
-                    <strong>Category:</strong> {product.category}
-                </p>
+                        <p>
+                            <strong>Category:</strong> {product.category}
+                        </p>
+                        {product.rating && (
+                            <p>
+                                <strong>Rating:</strong> {product.rating.rate} ({product.rating.count} reviews)
+                            </p>
+                        )}
+                        <p></p>
 
-                {product.rating && (
-                    <p>
-                        <strong>Rating:</strong> {product.rating.rate} ({product.rating.count} reviews)
-                    </p>
-                )}
-
-                <button onClick={() => addToCart(product)}>Add to cart</button>
+                        <div style={{display: "flex", gap: 20, alignItems: "center", maxWidth: "100%", justifyContent: "center"}}>
+                            <h3>${product.price}</h3>
+                            {isInCart ? (
+                                <Link className="button" to="/cart">
+                                    Go to cart
+                                </Link>
+                            ) : (
+                                <button className="button" onClick={() => addToCart(product)}>
+                                    Add to cart
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                </div>
             </div>
+
+            <Footer />
         </>
     );
 }

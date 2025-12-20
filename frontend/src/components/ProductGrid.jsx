@@ -9,11 +9,13 @@ export default function ProductGrid({products, search}) {
                     <Link key={p.id} to={`/product/${p.id}`} className="product-card-link">
                         <div className="product-card">
                             <img src={p.image} alt="product image" />
-                            <h4>{p.title}</h4>
-                            <p>
-                                {p.rating.rate}/5 (Out of {p.rating.count})
-                            </p>
-                            <br />${p.price}
+                            <div>
+                                <h4>{p.title}</h4>
+                                <p>
+                                    {p.rating.rate}/5 (Out of {p.rating.count})
+                                </p>
+                                <br />${p.price}
+                            </div>
                         </div>
                     </Link>
                 ))}

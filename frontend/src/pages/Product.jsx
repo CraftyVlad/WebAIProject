@@ -3,9 +3,8 @@ import {Link, useParams, useNavigate} from "react-router-dom";
 import {fetchProducts} from "../api/api";
 import Header from "../components/Header.jsx";
 import Footer from "../components/Footer.jsx";
-import Chat from "../components/Chat.jsx";
 
-export default function Product({cart, addToCart, username, token,  search, setSearch, logoutUser}) {
+export default function Product({cart, addToCart, email, token,  search, setSearch, logoutUser}) {
     const {id} = useParams();
     const [product, setProduct] = useState(null);
     const navigate = useNavigate();
@@ -35,7 +34,7 @@ export default function Product({cart, addToCart, username, token,  search, setS
                 cart={cart}
                 search={search}
                 setSearch={setSearch}
-                username={username}
+                email={email}
                 token={token}
                 logoutUser={logoutUser}
                 isSearchable={false}
@@ -65,7 +64,7 @@ export default function Product({cart, addToCart, username, token,  search, setS
                         <div style={{display: "flex", gap: 20, alignItems: "center", maxWidth: "100%", justifyContent: "center"}}>
                             <h3>${product.price}</h3>
                             {isInCart ? (
-                                <Link className="button" to="/cart">
+                                <Link className="button" to="/cart" style={{backgroundColor: "#ffe78fff"}}>
                                     Go to cart
                                 </Link>
                             ) : (

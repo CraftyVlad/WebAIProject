@@ -29,7 +29,7 @@ def chat(body: ChatRequest, current_user: dict = Depends(get_current_user)):
     products = resp.json()
 
     prompt = f"""
-You are a store assistant. Reply in the same language as the user’s question.
+You are a store assistant. Reply in the same language as the user’s question. When mentioning products, provide a link at the end of the chat (without brackets) to the product page like: "Check out {'{name}'} here: http://localhost:3000/product/{'{id}'}".
 Answer ONLY using this product data:
 
 {json.dumps(products, indent=2)}
@@ -44,6 +44,6 @@ User question:
     )
 
     return {
-        "user": current_user["username"],
+        "user": current_user["email"],
         "answer": response.choices[0].message.content
     }

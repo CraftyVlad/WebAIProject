@@ -2,6 +2,21 @@ import {useState, useRef, useEffect} from "react";
 import {chat} from "../api/api";
 import {HiOutlineSparkles} from "react-icons/hi2";
 
+const linkifyText = (text) => {
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    const parts = text.split(urlRegex);
+    return parts.map((part, index) => {
+        if (urlRegex.test(part)) {
+            return (
+                <a style={{textDecoration: "underline"}} key={index} href={part} target="_blank" rel="noopener noreferrer">
+                    {part}
+                </a>
+            );
+        }
+        return part;
+    });
+};
+
 export default function Chat({token}) {
     const [open, setOpen] = useState(false);
     const [message, setMessage] = useState("");
@@ -41,7 +56,9 @@ export default function Chat({token}) {
             <div className={`chat-panel ${open ? "open" : ""}`}>
                 <div className="chat-header">
                     <h3>Chat with Store Assistant</h3>
-                    <button className="button" onClick={() => setOpen(false)}>✕</button>
+                    <button className="button" onClick={() => setOpen(false)}>
+                        ✕
+                    </button>
                 </div>
 
                 <div className="chat-body">
@@ -51,7 +68,9 @@ export default function Chat({token}) {
                             <div className="chat-messages">
                                 {messages.map((m, i) => (
                                     <div key={i} className={`chat-message ${m.sender}`}>
-                                        <b>{m.sender === "user" ? "You:" : "Store assistant:"}</b> {m.text}
+                                        <b>{m.sender === "user" ? "You:" : "Store assistant:"}</b>
+                                        <br />
+                                        <pre className="chat-message-text">{linkifyText(m.text)}</pre>
                                     </div>
                                 ))}
                                 <div ref={messagesEndRef} />
@@ -64,7 +83,9 @@ export default function Chat({token}) {
                                     onChange={(e) => setMessage(e.target.value)}
                                     onKeyDown={(e) => e.key === "Enter" && sendChat()}
                                 />
-                                <button className="button" onClick={sendChat}>Send</button>
+                                <button className="button" onClick={sendChat}>
+                                    Send
+                                </button>
                             </div>
                         </>
                     )}

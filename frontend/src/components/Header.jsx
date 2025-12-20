@@ -2,7 +2,7 @@ import {useEffect, useState} from "react";
 import {Link} from "react-router-dom";
 import {FiSearch, FiShoppingCart, FiShoppingBag} from "react-icons/fi";
 
-export default function Header({cart, search, setSearch, username, logoutUser, token, isSearchable}) {
+export default function Header({cart, search, setSearch, email, logoutUser, token, isSearchable}) {
     const totalInCart = (cart || []).reduce((sum, item) => sum + (item.quantity || 0), 0);
 
     return (
@@ -34,9 +34,9 @@ export default function Header({cart, search, setSearch, username, logoutUser, t
                         </Link>
                         {token ? (
                             <>
-                                {username && (
+                                {email && (
                                     <span style={{color: "#ffc90e", alignItems: "center"}} className="user">
-                                        Hello, {username}!
+                                        {email}
                                     </span>
                                 )}
                                 <button className="button" onClick={logoutUser}>

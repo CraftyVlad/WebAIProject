@@ -8,7 +8,7 @@ export function getCartCount() {
     return cart.reduce((sum, item) => sum + item.quantity, 0);
 }
 
-export default function Cart({cart, username, token, updateCart, logoutUser}) {
+export default function Cart({cart, email, token, updateCart, logoutUser}) {
     useEffect(() => {
         localStorage.setItem("cart", JSON.stringify(cart));
     }, [cart]);
@@ -25,7 +25,7 @@ export default function Cart({cart, username, token, updateCart, logoutUser}) {
 
     return (
         <>
-            <Header cart={cart} token={token} username={username} logoutUser={logoutUser} isSearchable={false} />
+            <Header cart={cart} token={token} email={email} logoutUser={logoutUser} isSearchable={false} />
             <div className="container">
                 <h2 style={{padding: "22px 0", margin: "0"}}>Your Cart</h2>
                 {cart.length === 0 && <p>Cart is empty</p>}

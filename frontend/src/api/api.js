@@ -10,20 +10,20 @@ async function handleResponse(res) {
     return data;
 }
 
-export async function register(username, email, password) {
+export async function register(email, password) {
     const res = await fetch(`${API_URL}/users/register`, {
         method: "POST",
         headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({username, email, password}),
+        body: JSON.stringify({email, password}),
     });
     return handleResponse(res);
 }
 
-export async function login(username, email, password) {
+export async function login(email, password) {
     const res = await fetch(`${API_URL}/users/login`, {
         method: "POST",
         headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({username, email, password}),
+        body: JSON.stringify({email, password}),
     });
     return handleResponse(res);
 }

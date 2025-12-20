@@ -19,7 +19,7 @@ export default function App() {
         }
     });
     const [token, setToken] = useState(localStorage.getItem("token"));
-    const [username, setUsername] = useState(localStorage.getItem("username"));
+    const [email, setEmail] = useState(localStorage.getItem("email"));
     const [search, setSearch] = useState("");
 
     const navigate = useNavigate();
@@ -33,25 +33,25 @@ export default function App() {
         localStorage.setItem("cart", JSON.stringify(newCart));
     }
 
-    async function handleLogin(username, email, password, onSuccess) {
-        const data = await login(username, email, password);
+    async function handleLogin(email, password, onSuccess) {
+        const data = await login(email, password);
         setToken(data.jwt);
-        setUsername(username);
+        setEmail(email);
         localStorage.setItem("token", data.jwt);
-        localStorage.setItem("username", username);
+        localStorage.setItem("email", email);
         onSuccess();
         navigate("/");
     }
 
-    async function handleRegister(username, email, password, onSuccess) {
-        await register(username, email, password);
+    async function handleRegister(email, password, onSuccess) {
+        await register(email, password);
         onSuccess();
         navigate("/login");
     }
 
     function logoutUser() {
         setToken(null);
-        setUsername(null);
+        setEmail(null);
         localStorage.clear();
         setCart([]);
     }
@@ -75,7 +75,7 @@ export default function App() {
             <Routes>
                 <Route
                     path="/"
-                    element={<Home cart={cart} username={username} search={search} setSearch={setSearch} token={token} logoutUser={logoutUser} />}
+                    element={<Home cart={cart} email={email} search={search} setSearch={setSearch} token={token} logoutUser={logoutUser} />}
                 />
                 <Route path="/login" element={<Login cart={cart} token={token} handleLogin={handleLogin} />} />
                 <Route path="/register" element={<Register cart={cart} token={token} handleRegister={handleRegister} />} />
@@ -85,7 +85,7 @@ export default function App() {
                         <Product
                             cart={cart}
                             addToCart={addToCart}
-                            username={username}
+                            email={email}
                             token={token}
                             search={search}
                             setSearch={setSearch}
@@ -95,7 +95,7 @@ export default function App() {
                 />
                 <Route
                     path="/cart"
-                    element={<Cart cart={cart} username={username} token={token} updateCart={updateCart} logoutUser={logoutUser} />}
+                    element={<Cart cart={cart} email={email} token={token} updateCart={updateCart} logoutUser={logoutUser} />}
                 />
             </Routes>
 

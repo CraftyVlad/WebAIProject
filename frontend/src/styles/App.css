@@ -231,7 +231,8 @@ a {
     border: none;
     background-color: #ffc90e;
     cursor: pointer;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    border: 2px solid #000000;
+    box-shadow: #000000 2px 2px 5px;
 }
 
 .chat-panel {
@@ -239,7 +240,7 @@ a {
     top: 0;
     right: 0;
     width:360px;
-    height: 100vh;
+    height: 100%;
     background: white;
     border-left: 3px solid #161616;
     display: flex;
@@ -269,6 +270,7 @@ a {
     display: flex;
     flex-direction: column;
     padding: 10px;
+    height: 100%;
 }
 
 .chat-messages {
@@ -282,6 +284,11 @@ a {
     padding: 8px 12px;
     border-radius: 8px;
     max-width: 80%;
+    white-space: pre-wrap;
+}
+
+.chat-message-text {
+    white-space: pre-wrap;
 }
 
 .chat-message.user {

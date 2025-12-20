@@ -7,20 +7,20 @@ security = HTTPBearer()
 
 def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
     token = credentials.credentials
-    username = verify_token(token)
+    email = verify_token(token)
 
-    if not username:
+    if not email:
         raise HTTPException(status_code=401, detail="Token is invalid or expired")
 
     db = get_db()
     cur = db.cursor()
     cur.execute(
         """
-        SELECT id, username, email, created_at, updated_at
+        SELECT id, email, created_at, updated_at
         FROM users
-        WHERE username=?
+        WHERE email=?
         """,
-        (username,)
+        (email,)
     )
     row = cur.fetchone()
     
@@ -35,8 +35,7 @@ def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(securit
 
     return {
         "id": row[0],
-        "username": row[1],
-        "email": row[2],
-        "created_at": row[3],
-        "updated_at": row[4]
+        "email": row[1],
+        "created_at": row[2],
+        "updated_at": row[3]
     }

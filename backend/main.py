@@ -7,6 +7,9 @@ from fastapi.responses import JSONResponse
 from controllers import users, chat
 from controllers import products
 from db.database import get_db
+import os
+
+FRONTEND_URL = os.getenv("https://storewithai.onrender.com", "http://localhost:3000")
 
 app = FastAPI(
     title="FastAPI Store AI",
@@ -15,7 +18,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=[FRONTEND_URL],
     allow_credentials=True,
     allow_headers=["*"],
     allow_methods=["*"],

@@ -1,4 +1,6 @@
-const API_URL = "http://localhost:8000/api";
+const API_URL = process.env.REACT_APP_API_URL;
+
+export default API_URL;
 
 async function handleResponse(res) {
     const data = await res.json();

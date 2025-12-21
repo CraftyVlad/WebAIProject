@@ -9,7 +9,7 @@ from controllers import products
 from db.database import get_db
 import os
 
-FRONTEND_URL = os.getenv("https://storewithai.onrender.com", "http://localhost:3000")
+FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000")
 
 app = FastAPI(
     title="FastAPI Store AI",

@@ -4,7 +4,7 @@ from fastapi.security import HTTPAuthorizationCredentials
 
 from db.database import get_db
 from models.user import UserRegister, UserLogin, User, AuthUser, UserUpdate
-from utils.user import get_current_user, security
+from utils.user import security
 from utils.password import hash_password, verify_password
 from utils.token import create_access_token
 from constants.keys import JWT_EXPIRE_MINUTES

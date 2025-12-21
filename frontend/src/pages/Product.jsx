@@ -72,6 +72,9 @@ export default function Product({cart, addToCart, email, token,  search, setSear
                                     Add to cart
                                 </button>
                             )}
+                            <button className="button" onClick={() => alert("Purchase function not made yet.")}>
+                                BUY NOW
+                            </button>
                         </div>
                     </div>
                 </div>

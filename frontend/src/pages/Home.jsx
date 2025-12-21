@@ -3,7 +3,6 @@ import {fetchProducts} from "../api/api";
 import "../styles/App.css";
 import "../components/ProductGrid.jsx";
 import ProductGrid from "../components/ProductGrid.jsx";
-import Chat from "../components/Chat.jsx";
 import Header from "../components/Header.jsx";
 import Footer from "../components/Footer.jsx";
 

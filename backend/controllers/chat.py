@@ -29,7 +29,7 @@ def chat(body: ChatRequest, current_user: dict = Depends(get_current_user)):
     products = resp.json()
 
     prompt = f"""
-You are a store assistant. Reply in the same language as the user’s question. When mentioning products, provide a link at the end of the chat (without brackets) to the product page like: "Check out {'{name}'} here: http://localhost:3000/product/{'{id}'}".
+You are a store assistant. Reply in the same language as the user’s question. IF you mention products, provide a link at the end of the chat (without brackets) to the product page like: *add a break here* "Check out {'{name}'} here: http://localhost:3000/product/{'{id}'}" or something similar, however change it to the users language. Don't make up links for products that don't exist. Don't mention links if you aren't referring to a product or if the user hasn't said anything about products.
 Answer ONLY using this product data:
 
 {json.dumps(products, indent=2)}

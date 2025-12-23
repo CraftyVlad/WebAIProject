@@ -10,13 +10,13 @@ FAKESTORE_URL = "https://fakestoreapi.com/products"
 def get_products():
     try:
         res = requests.get(
-        FAKESTORE_URL,
-        headers={
-            "User-Agent": "Mozilla/5.0",
-            "Accept": "application/json",
-        },
-        timeout=10,
-    )
+            FAKESTORE_URL,
+            headers={
+                "User-Agent": "Mozilla/5.0",
+                "Accept": "application/json",
+            },
+            timeout=10,
+        )
         res.raise_for_status()
         return res.json()
     except requests.exceptions.RequestException as e:

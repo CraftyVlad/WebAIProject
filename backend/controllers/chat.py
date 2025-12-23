@@ -12,7 +12,9 @@ router = APIRouter()
 client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000")
-FAKESTORE_URL = "https://fakestoreapi.com/products"
+
+with open("products.json", "r", encoding="utf-8") as f:
+    PRODUCTS = json.load(f)
 
 @router.post("/")
 def chat(body: ChatRequest, current_user: dict = Depends(get_current_user)):
@@ -22,19 +24,7 @@ def chat(body: ChatRequest, current_user: dict = Depends(get_current_user)):
             detail="Question cannot be empty"
         )
 
-    res = requests.get(
-        FAKESTORE_URL,
-        headers={
-            "User-Agent": "Mozilla/5.0",
-            "Accept": "application/json",
-        },
-        timeout=10,
-    )
-    if res.status_code != 200:
-        return {"error": "Failed to fetch products"}
-        
-
-    products = res.json()
+    products = PRODUCTS
 
     prompt = f"""
 You are a store assistant. Reply in the same language as the user’s question.

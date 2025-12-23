@@ -6,10 +6,10 @@ from groq import Groq
 from dotenv import load_dotenv
 import os, json
 
-load_dotenv()
-
 router = APIRouter()
 client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+
+FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000")
 
 FAKESTORE_URL = "https://fakestoreapi.com/products"
 
@@ -21,22 +21,36 @@ def chat(body: ChatRequest, current_user: dict = Depends(get_current_user)):
             detail="Question cannot be empty"
         )
 
-    resp = requests.get(FAKESTORE_URL)
-    if resp.status_code != 200:
+    res = requests.get(
+        FAKESTORE_URL,
+        headers={
+            "User-Agent": "Mozilla/5.0",
+            "Accept": "application/json",
+        },
+        timeout=10,
+    )
+    if res.status_code != 200:
         return {"error": "Failed to fetch products"}
         
 
-    products = resp.json()
+    products = res.json()
 
     prompt = f"""
-You are a store assistant. Reply in the same language as the user’s question. IF you mention products, provide a link at the end of the chat (without brackets) to the product page like: *add a break here* "Check out {'{name}'} here: http://localhost:3000/product/{'{id}'}" or something similar, however change it to the users language. Don't make up links for products that don't exist. Don't mention links if you aren't referring to a product or if the user hasn't said anything about products.
-Answer ONLY using this product data:
+    You are a store assistant. Reply in the same language as the user’s question.
+    IF you mention products, provide a link at the end of the chat (without brackets) to the product page like: 
 
-{json.dumps(products, indent=2)}
+    "Check out {{name}} here: {FRONTEND_URL}/product/{{id}}"
 
-User question:
-{body.question}
-"""
+    or something similar, however change it to the users language.
+    Don't make up links for products that don't exist.
+    Don't mention links if you aren't referring to a product or if the user hasn't said anything about products.
+    Answer ONLY using this product data:
+
+    {json.dumps(products, indent=2)}
+
+    User question:
+    {body.question}
+    """
 
     response = client.chat.completions.create(
         model="llama-3.3-70b-versatile",

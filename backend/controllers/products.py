@@ -3,11 +3,20 @@ import requests
 
 router = APIRouter()
 
+FAKESTORE_URL = "https://fakestoreapi.com/products"
+
 @router.get("/", include_in_schema=True)
 @router.get("", include_in_schema=False)
 def get_products():
     try:
-        res = requests.get("https://fakestoreapi.com/products", timeout=10)
+        res = requests.get(
+        FAKESTORE_URL,
+        headers={
+            "User-Agent": "Mozilla/5.0",
+            "Accept": "application/json",
+        },
+        timeout=10,
+    )
         res.raise_for_status()
         return res.json()
     except requests.exceptions.RequestException as e:

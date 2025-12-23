@@ -3,17 +3,18 @@ from models.chat import ChatRequest
 from utils.user import get_current_user
 import requests
 from groq import Groq
-from dotenv import load_dotenv
 import os, json
+from dotenv import load_dotenv
+
+load_dotenv()
 
 router = APIRouter()
 client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000")
-
 FAKESTORE_URL = "https://fakestoreapi.com/products"
 
-@router.post("")
+@router.post("/")
 def chat(body: ChatRequest, current_user: dict = Depends(get_current_user)):
     if not body.question.strip():
         raise HTTPException(
@@ -36,21 +37,21 @@ def chat(body: ChatRequest, current_user: dict = Depends(get_current_user)):
     products = res.json()
 
     prompt = f"""
-    You are a store assistant. Reply in the same language as the user’s question.
-    IF you mention products, provide a link at the end of the chat (without brackets) to the product page like: 
+You are a store assistant. Reply in the same language as the user’s question.
+IF you mention products, provide a link at the end of the chat (without brackets) to the product page like: 
 
-    "Check out {{name}} here: {FRONTEND_URL}/product/{{id}}"
+"Check out {{name}} here: {FRONTEND_URL}/product/{{id}}"
 
-    or something similar, however change it to the users language.
-    Don't make up links for products that don't exist.
-    Don't mention links if you aren't referring to a product or if the user hasn't said anything about products.
-    Answer ONLY using this product data:
+or something similar, however change it to the users language.
+Don't make up links for products that don't exist.
+Don't mention links if you aren't referring to a product or if the user hasn't said anything about products.
+Answer ONLY using this product data:
 
-    {json.dumps(products, indent=2)}
+{json.dumps(products, indent=2)}
 
-    User question:
-    {body.question}
-    """
+User question:
+{body.question}
+"""
 
     response = client.chat.completions.create(
         model="llama-3.3-70b-versatile",
